@@ -116,7 +116,7 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
                     </tr>
                     <tr>
                         <td>问题反馈(qq同号)</td>
-                        <td>751393839@qq.com</td>
+                        <td><?= Yii::$app->params['exploitEmail']?></td>
                     </tr>
                 </table>
             </div>
