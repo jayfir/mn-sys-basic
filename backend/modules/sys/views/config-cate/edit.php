@@ -18,6 +18,7 @@ use yii\helpers\Url;
             <div class="ibox-content">
                 <div class="col-sm-12">
                     <?= $form->field($model, 'title')->textInput() ?>
+                    <?= $form->field($model, 'cate_css')->textInput() ?>
                     <?= $form->field($model, 'sort')->textInput() ?>
                     <?= $form->field($model, 'status')->radioList(['1'=>'启用','-1'=>'禁用']) ?>
                 </div>

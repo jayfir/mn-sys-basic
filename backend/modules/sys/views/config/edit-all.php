@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
                                 <div class="panel-body">
                                     <form class="form-horizontal" method="post" action="" id="form-tab-<?= $cate['id'] ?>">
                                         <?php foreach ($cate['-'] as $item){ ?>
-                                            <h2 style="font-size: 20px;"><i class="fa fa-share-alt"></i> <?= $item['title']?></h2>
+                                            <h2 style="font-size: 20px;"><i class="fa <?= $item['cate_css']?>"></i> <?= $item['title']?></h2>
                                             <?php if(isset($item['config'])){ ?>
                                                 <div class="col-sm-12" style="padding-left: 37px;">
                                                     <?php foreach ($item['config'] as $row){ ?>

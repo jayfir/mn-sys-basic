@@ -19,8 +19,8 @@ use yii\helpers\ArrayHelper;
  * @property integer $append
  * @property integer $updated
  */
-class ConfigCate extends ActiveRecord
-{
+class ConfigCate extends ActiveRecord {
+
     /**
      * @inheritdoc
      */
@@ -47,14 +47,15 @@ class ConfigCate extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'        => 'ID',
-            'title'     => '分类名称',
-            'status'    => '状态',
-            'sort'      => '排序',
-            'pid'       => '上级目录ID',
-            'level'     => '级别',
-            'append'    => '创建时间',
-            'updated'   => '修改时间',
+            'id' => 'ID',
+            'title' => '分类名称',
+            'cate_css' => "分类LOGO",
+            'status' => '状态',
+            'sort' => '排序',
+            'pid' => '上级目录ID',
+            'level' => '级别',
+            'append' => '创建时间',
+            'updated' => '修改时间',
         ];
     }
 
@@ -65,10 +66,10 @@ class ConfigCate extends ActiveRecord
     public static function getListRoot()
     {
         return self::find()
-            ->where(['pid' => 0])
-            ->orderBy('sort asc')
-            ->asArray()
-            ->all();
+                        ->where(['pid' => 0])
+                        ->orderBy('sort asc')
+                        ->asArray()
+                        ->all();
     }
 
     /**
@@ -78,10 +79,10 @@ class ConfigCate extends ActiveRecord
     public static function getListAll()
     {
         return self::find()
-            ->where(['status'=>1])
-            ->orderBy('sort asc')
-            ->asArray()
-            ->all();
+                        ->where(['status' => 1])
+                        ->orderBy('sort asc')
+                        ->asArray()
+                        ->all();
     }
 
     /**
@@ -92,11 +93,11 @@ class ConfigCate extends ActiveRecord
     public static function getChildList($pid = 0)
     {
         $cates = self::find()
-            ->where(['pid'=>$pid,'status'=>1])
-            ->orderBy('sort asc')
-            ->all();
+                ->where(['pid' => $pid, 'status' => 1])
+                ->orderBy('sort asc')
+                ->all();
 
-        return ArrayHelper::map($cates,'id','title');
+        return ArrayHelper::map($cates, 'id', 'title');
     }
 
     /**
@@ -115,4 +116,5 @@ class ConfigCate extends ActiveRecord
             ],
         ];
     }
+
 }
