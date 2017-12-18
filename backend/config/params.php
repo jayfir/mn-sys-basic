@@ -4,7 +4,7 @@ return [
 
   'exploitEmail' => 'chinhui@coderfarmer.com',
     'exploitName' => 'jayfir',
-    'exploitVersions' => '1.3.10',
+    'exploitVersions' => '1.2.0',
     'exploitSysName' => 'JjayFir核心框架',
     'exploitOfficialWebsite' => '<a href="http://www.coderfarmer.com" target="_blank">www.coderfarmer.com</a>',
     'exploitGitHub' => '<a href="https://github.com/jayfir/mn-sys-basic.git" target="_blank">github.com/jayfir/mn-sys-basic.git</a>',
