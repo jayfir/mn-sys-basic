@@ -731,7 +731,7 @@ class WechatMessage implements \jayfir\basics\common\interfaces\WxMsgInterface
     */
     public function run(\$message)
     {
-    	// 这里定义此模块进行消息处理时的具体过程, 请查看RageFrame文档来编写你的代码
+    	// 这里定义此模块进行消息处理时的具体过程, 请查看JayFir文档来编写你的代码
     }
 }
             ";

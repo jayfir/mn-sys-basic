@@ -82,7 +82,7 @@ class WechatController extends \common\controllers\BaseController
          */
         $wechatConfig['log']['level'] = 'debug';
         $wechatConfig['log']['permission'] = 0777;
-        $wechatConfig['log']['file'] = '/tmp/rageframe/wechat/'.date('Y-m').'/'.date('d').'/wechat.log';
+        $wechatConfig['log']['file'] = '/tmp/jayfir/wechat/'.date('Y-m').'/'.date('d').'/wechat.log';
         /** 获取用户信息 **/
         $wechatConfig['oauth']['scopes'] = $this->_scopes;
         $wechatConfig['oauth']['callback'] = Yii::$app->request->getUrl();
