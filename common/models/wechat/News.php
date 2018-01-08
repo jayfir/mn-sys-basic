@@ -27,6 +27,7 @@ use yii\behaviors\TimestampBehavior;
  */
 class News extends ActiveRecord
 {
+
     /**
      * @inheritdoc
      */
@@ -41,12 +42,12 @@ class News extends ActiveRecord
     public function rules()
     {
         return [
-            [['attach_id', 'append', 'updated','show_cover_pic','sort'], 'integer'],
-            [['title'], 'required'],
-            [['content'], 'string'],
-            [['title'], 'string', 'max' => 50],
-            [['thumb_media_id', 'thumb_url', 'digest', 'content_source_url', 'url'], 'string', 'max' => 255],
-            [['author'], 'string', 'max' => 64],
+                [['attach_id', 'append', 'updated', 'show_cover_pic', 'sort'], 'integer'],
+                [['title'], 'required'],
+                [['content'], 'string'],
+                [['title'], 'string', 'max' => 50],
+                [['thumb_media_id', 'thumb_url', 'digest', 'content_source_url', 'url'], 'string', 'max' => 255],
+                [['author'], 'string', 'max' => 64],
         ];
     }
 
@@ -80,27 +81,24 @@ class News extends ActiveRecord
      */
     public static function getList($attach_id)
     {
-        $list = self::find()->where(['attach_id'=>$attach_id])
-            ->orderBy('sort asc')
-            ->asArray()
-            ->all();
+        $list = self::find()->where(['attach_id' => $attach_id])
+                ->orderBy('sort asc')
+                ->asArray()
+                ->all();
 
-        foreach ($list as &$item)
-        {
-            $item['thumb_url'] = urldecode(Url::to(['we-code/image','attach'=>$item['thumb_url']]));
-            preg_match_all('/<img[^>]*src\s*=\s*([\'"]?)([^\'" >]*)\1/isu', $item['content'],$match);
+        foreach ($list as &$item) {
+            $item['thumb_url'] = urldecode(Url::to(['we-code/image', 'attach' => $item['thumb_url']]));
+            preg_match_all('/<img[^>]*src\s*=\s*([\'"]?)([^\'" >]*)\1/isu', $item['content'], $match);
 
             $match_arr = [];
-            foreach ($match[2] as $vo)
-            {
+            foreach ($match[2] as $vo) {
                 $match_arr[$vo] = $vo;
             }
 
-            foreach ($match_arr as $src)
-            {
-                $url = Url::to(['we-code/image','attach' => $src]);
+            foreach ($match_arr as $src) {
+                $url = Url::to(['we-code/image', 'attach' => $src]);
                 $url = urldecode($url);
-                $item['content'] =  str_replace($src,$url,$item['content']);
+                $item['content'] = str_replace($src, $url, $item['content']);
             }
         }
 
@@ -112,12 +110,12 @@ class News extends ActiveRecord
      * @param $id
      * @return $this|Attachment|static
      */
-    public static function getNewsList($sort=0)
+    public static function getNewsList($sort = 0)
     {
         $list = self::find()->where(['sort' => $sort])
-            ->orderBy('id asc')
-            ->asArray()
-            ->all();
+                ->orderBy('id asc')
+                ->asArray()
+                ->all();
 
         return $list;
     }
@@ -132,14 +130,14 @@ class News extends ActiveRecord
         return self::deleteAll(['attach_id' => $attach_id]);
     }
 
-        /**
+    /**
      * @return array
      * 行为插入时间戳
      */
     public function behaviors()
     {
         return [
-            [
+                [
                 'class' => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => ['append', 'updated'],
@@ -148,4 +146,5 @@ class News extends ActiveRecord
             ],
         ];
     }
+
 }

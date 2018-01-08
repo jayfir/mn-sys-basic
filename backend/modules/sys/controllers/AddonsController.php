@@ -1,10 +1,12 @@
 <?php
+
 namespace jayfir\basics\backend\modules\sys\controllers;
 
 use Yii;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use Overtrue\Pinyin\Pinyin;
 use jayfir\basics\common\models\sys\Addons;
 use jayfir\basics\common\models\sys\AddonsBinding;
@@ -22,6 +24,7 @@ use backend\controllers\MController;
  */
 class AddonsController extends MController
 {
+
     /**
      * @return array
      */
@@ -39,40 +42,35 @@ class AddonsController extends MController
      */
     public function actionUninstall()
     {
-        $request  = Yii::$app->request;
+        $request = Yii::$app->request;
 
-        if($request->isPost)
-        {
+        if ($request->isPost) {
             $addonName = $request->get('name');
             // 删除数据库
-            if($model = Addons::find()->where(['name' => $addonName])->one())
-            {
+            if ($model = Addons::find()->where(['name' => $addonName])->one()) {
                 $model->delete();
             }
 
             // 验证模块信息
             $class = AddonsHelp::getAddonsClass($addonName);
 
-            if(!class_exists($class))
-            {
-                return $this->message('卸载成功',$this->redirect(['uninstall']));
+            if (!class_exists($class)) {
+                return $this->message('卸载成功', $this->redirect(['uninstall']));
             }
 
             // 卸载
             $addons = new $class;
-            if(StringHelper::strExists($addons->uninstall,'.php'))
-            {
-                if($addons->uninstall && file_exists(AddonsHelp::getAddons($addonName) . $addons->uninstall))
-                {
+            if (StringHelper::strExists($addons->uninstall, '.php')) {
+                if ($addons->uninstall && file_exists(AddonsHelp::getAddons($addonName) . $addons->uninstall)) {
                     include_once AddonsHelp::getAddons($addonName) . $addons->uninstall;
                 }
             }
 
-            return $this->message('卸载成功',$this->redirect(['uninstall']));
+            return $this->message('卸载成功', $this->redirect(['uninstall']));
         }
 
-        return $this->render('uninstall',[
-            'list' => Addons::find()->orderBy('append asc')->all(),
+        return $this->render('uninstall', [
+                    'list' => Addons::find()->orderBy('append asc')->all(),
         ]);
     }
 
@@ -81,74 +79,62 @@ class AddonsController extends MController
      */
     public function actionInstall()
     {
-        $request  = Yii::$app->request;
+        $request = Yii::$app->request;
 
         $model = new Addons();
-        if($request->isPost)
-        {
+        if ($request->isPost) {
             // 开启事物
             $transaction = Yii::$app->db->beginTransaction();
-            try
-            {
+            try {
                 $addonName = $request->get('name');
                 $class = AddonsHelp::getAddonsClass($addonName);
 
-                if(!class_exists($class))
-                {
+                if (!class_exists($class)) {
                     throw new \Exception('实例化失败,插件不存在或检查插件名称');
                 }
 
                 $addons = new $class;
                 // 安装
-                if(StringHelper::strExists($addons->install,'.php'))
-                {
-                    if($addons->install && file_exists(AddonsHelp::getAddons($addonName) . $addons->install))
-                    {
-                        include_once AddonsHelp::getAddons($addonName).$addons->install;
+                if (StringHelper::strExists($addons->install, '.php')) {
+                    if ($addons->install && file_exists(AddonsHelp::getAddons($addonName) . $addons->install)) {
+                        include_once AddonsHelp::getAddons($addonName) . $addons->install;
                     }
                 }
 
                 // 添加入口
-                isset($addons->bindings) && AddonsBinding::add($addons->bindings,$addonName);
+                isset($addons->bindings) && AddonsBinding::add($addons->bindings, $addonName);
                 $model->attributes = $addons->info;
                 $model->type = $addons->type ? $addons->type : 'other';
                 $model->setting = $addons->setting ? StatusEnum::ENABLED : StatusEnum::DISABLED;
                 $model->hook = $addons->hook ? StatusEnum::ENABLED : StatusEnum::DISABLED;
                 $model->is_rule = $addons->is_rule ? StatusEnum::ENABLED : StatusEnum::DISABLED;
                 $model->wxapp_support = $addons->wxappSupport ? StatusEnum::ENABLED : StatusEnum::DISABLED;
-                $model->wechat_message = isset($addons->wechatMessage) ? serialize($addons->wechatMessage) : '' ;
+                $model->wechat_message = isset($addons->wechatMessage) ? serialize($addons->wechatMessage) : '';
 
                 // 首先字母转大写拼音
-                if($chinese = StringHelper::strToChineseCharacters($model->title))
-                {
-                    $title_initial = mb_substr($chinese[0][0],0,1,'utf-8');
+                if ($chinese = StringHelper::strToChineseCharacters($model->title)) {
+                    $title_initial = mb_substr($chinese[0][0], 0, 1, 'utf-8');
                     $pinyin = new Pinyin();
                     $model->title_initial = ucwords($pinyin->abbr($title_initial));
                 }
 
-                if($model->save())
-                {
+                if ($model->save()) {
                     $transaction->commit();
-                    return $this->message('安装成功',$this->redirect(['uninstall']));
-                }
-                else
-                {
+                    return $this->message('安装成功', $this->redirect(['uninstall']));
+                } else {
                     $error = $this->analysisError($model->getFirstErrors());
                     throw new \Exception($error);
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 $transaction->rollBack();
-                return $this->message($e->getMessage(),$this->redirect(['install']),'error');
+                return $this->message($e->getMessage(), $this->redirect(['install']), 'error');
             }
         }
 
-        return $this->render('install',[
-            'list' => $model->getList()
+        return $this->render('install', [
+                    'list' => $model->getList()
         ]);
     }
-
 
     /**
      * 更新数据库文件
@@ -157,26 +143,23 @@ class AddonsController extends MController
      */
     public function actionUpgrade()
     {
-        $request  = Yii::$app->request;
+        $request = Yii::$app->request;
         $addonName = $request->get('name');
         $class = AddonsHelp::getAddonsClass($addonName);
 
-        if(!class_exists($class))
-        {
-            return $this->message('实例化失败,插件不存在或检查插件名称',$this->redirect(['uninstall']),'error');
+        if (!class_exists($class)) {
+            return $this->message('实例化失败,插件不存在或检查插件名称', $this->redirect(['uninstall']), 'error');
         }
 
         $addons = new $class;
         // 更新
-        if(StringHelper::strExists($addons->upgrade,'.php'))
-        {
-            if($addons->upgrade && file_exists(AddonsHelp::getAddons($addonName) . $addons->upgrade))
-            {
-                include_once AddonsHelp::getAddons($addonName).$addons->upgrade;
+        if (StringHelper::strExists($addons->upgrade, '.php')) {
+            if ($addons->upgrade && file_exists(AddonsHelp::getAddons($addonName) . $addons->upgrade)) {
+                include_once AddonsHelp::getAddons($addonName) . $addons->upgrade;
             }
         }
 
-        return $this->message('更新数据成功',$this->redirect(['uninstall']));
+        return $this->message('更新数据成功', $this->redirect(['uninstall']));
     }
 
     /**
@@ -186,61 +169,52 @@ class AddonsController extends MController
      */
     public function actionUpdateConfig()
     {
-        $request  = Yii::$app->request;
+        $request = Yii::$app->request;
         // 开启事物
         $transaction = Yii::$app->db->beginTransaction();
-        try
-        {
+        try {
             $addonName = $request->get('name');
             $class = AddonsHelp::getAddonsClass($addonName);
 
             // 判断类是否存在
-            if(!class_exists($class))
-            {
+            if (!class_exists($class)) {
                 throw new \Exception('实例化失败,插件不存在或检查插件名称');
             }
 
             $addons = new $class;
 
-            if(!($model = Addons::getAddon($addonName)))
-            {
+            if (!($model = Addons::getAddon($addonName))) {
                 throw new \Exception('插件不存在');
             }
 
             // 删除原先的数据
             AddonsBinding::deleted($addonName);
             // 添加入口
-            isset($addons->bindings) && AddonsBinding::add($addons->bindings,$addonName);
+            isset($addons->bindings) && AddonsBinding::add($addons->bindings, $addonName);
             $model->attributes = $addons->info;
             $model->type = $addons->type ? $addons->type : 'other';
             $model->setting = $addons->setting ? StatusEnum::ENABLED : StatusEnum::DISABLED;
             $model->hook = $addons->hook ? StatusEnum::ENABLED : StatusEnum::DISABLED;
             $model->wxapp_support = $addons->wxappSupport ? StatusEnum::ENABLED : StatusEnum::DISABLED;
-            $model->wechat_message = isset($addons->wechatMessage) ? serialize($addons->wechatMessage) : '' ;
+            $model->wechat_message = isset($addons->wechatMessage) ? serialize($addons->wechatMessage) : '';
 
             // 首先字母转大写拼音
-            if($chinese = StringHelper::strToChineseCharacters($model->title))
-            {
-                $title_initial = mb_substr($chinese[0][0],0,1,'utf-8');
+            if ($chinese = StringHelper::strToChineseCharacters($model->title)) {
+                $title_initial = mb_substr($chinese[0][0], 0, 1, 'utf-8');
                 $pinyin = new Pinyin();
                 $model->title_initial = ucwords($pinyin->abbr($title_initial));
             }
 
-            if($model->save())
-            {
+            if ($model->save()) {
                 $transaction->commit();
-                return $this->message('更新配置成功',$this->redirect(['uninstall']));
-            }
-            else
-            {
+                return $this->message('更新配置成功', $this->redirect(['uninstall']));
+            } else {
                 $error = $this->analysisError($model->getFirstErrors());
                 throw new \Exception($error);
             }
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $transaction->rollBack();
-            return $this->message($e->getMessage(),$this->redirect(['uninstall']),'error');
+            return $this->message($e->getMessage(), $this->redirect(['uninstall']), 'error');
         }
     }
 
@@ -251,20 +225,18 @@ class AddonsController extends MController
      */
     public function actionCreate()
     {
-        $request  = Yii::$app->request;
+        $request = Yii::$app->request;
 
         $model = new Addons();
         $model->install = 'install.php';
         $model->uninstall = 'uninstall.php';
         $model->upgrade = 'upgrade.php';
-        if($model->load($request->post()))
-        {
+        if ($model->load($request->post())) {
             // 全部post
             $allPost = $request->post();
 
-            if(!is_writable(Yii::getAlias('@addons')))
-            {
-                return $this->message('您没有创建目录写入权限，无法使用此功能',$this->redirect(['create']),'error');
+            if (!is_writable(Yii::getAlias('@addons'))) {
+                return $this->message('您没有创建目录写入权限，无法使用此功能', $this->redirect(['create']), 'error');
             }
 
             $model->name = trim($model->name);
@@ -280,12 +252,10 @@ class AddonsController extends MController
              * 微信消息
              */
             $wechat_message = '[';
-            if($model->wechat_message)
-            {
+            if ($model->wechat_message) {
                 $files[] = "{$addon_dir}WechatMessage.php";
 
-                foreach ($model->wechat_message as $key => $value)
-                {
+                foreach ($model->wechat_message as $key => $value) {
                     $key >= 1 && $wechat_message .= ',';
                     $wechat_message .= "'{$value}'";
                 }
@@ -310,16 +280,14 @@ class AddonsController extends MController
             $files[] = "{$addon_dir}home/views/";
 
             // 小程序支持
-            if($model->wxapp_support)
-            {
+            if ($model->wxapp_support) {
                 $files[] = "{$addon_dir}api/";
                 $files[] = "{$addon_dir}api/controllers/";
                 $files[] = "{$addon_dir}api/controllers/PagesController.php";
             }
 
             // 参数设置支持
-            if($model->setting == true)
-            {
+            if ($model->setting == true) {
                 $files[] = "{$addon_dir}Setting.php";
                 $files[] = "{$addon_dir}common/models/SettingForm.php";
                 $files[] = "{$addon_dir}admin/views/setting/";
@@ -331,15 +299,14 @@ class AddonsController extends MController
             $model['upgrade'] && $files[] = "{$addon_dir}{$model['upgrade']}";
             FileHelper::createDirOrFiles($files);
 
-            /*********************************是否嵌入规则*********************************/
+            /*             * *******************************是否嵌入规则******************************** */
             $is_rule = $model->is_rule ? 'true' : 'false';
 
-            /*********************************小程序*********************************/
+            /*             * *******************************小程序******************************** */
 
             $wxapp_support = $model->wxapp_support ? 'true' : 'false';
             $wxapp_support_str = "";
-            if($model->wxapp_support)
-            {
+            if ($model->wxapp_support) {
                 $wxapp_support_str = "<?php
 namespace addons\\{$model->name}\\api\\controllers;
 
@@ -360,12 +327,11 @@ class PagesController extends WxApp
             ";
             }
 
-            /*********************************钩子*********************************/
+            /*             * *******************************钩子******************************** */
 
             $hook = 'false';
             $hookStr = "";
-            if($model->hook)
-            {
+            if ($model->hook) {
                 $hook = 'true';
                 $hookStr = "
     /**
@@ -385,8 +351,7 @@ class PagesController extends WxApp
             // 参数
             $setting = 'false';
             $settingStr = "";
-            if($model->setting)
-            {
+            if ($model->setting) {
                 $setting = 'true';
                 $settingStr = "
     /**
@@ -413,13 +378,13 @@ class PagesController extends WxApp
                 ";
             }
 
-            /*********************************必要配置文件*********************************/
+            /*             * *******************************必要配置文件******************************** */
 
             // 导航
-            $bindings = AddonsHelp::bindingsToString($allPost['bindings'],'cover');
-            !empty($bindings) && $bindings .=",
+            $bindings = AddonsHelp::bindingsToString($allPost['bindings'], 'cover');
+            !empty($bindings) && $bindings .= ",
             ";
-            $bindings .= AddonsHelp::bindingsToString($allPost['bindings'],'menu');
+            $bindings .= AddonsHelp::bindingsToString($allPost['bindings'], 'menu');
 
             // 配置信息
             $Addon = "<?php 
@@ -547,7 +512,7 @@ class {$model->name}Addon
 }
             ";
 
-            /*********************************后台控制器*********************************/
+            /*             * *******************************后台控制器******************************** */
 
             $AdminController = "<?php
 namespace addons\\{$model->name}\\admin\\controllers;
@@ -648,7 +613,7 @@ class {$model->name}Controller extends Addons
 }
             ";
 
-            /*********************************后台模型*********************************/
+            /*             * *******************************后台模型******************************** */
 
             $CommonModel = "<?php
 namespace addons\\{$model->name}\\common\\models;
@@ -662,7 +627,7 @@ class {$model->name} extends ActiveRecord
 }
             ";
 
-            /*********************************前台控制器*********************************/
+            /*             * *******************************前台控制器******************************** */
 
             $HomeController = "<?php
 namespace addons\\{$model->name}\\home\\controllers;
@@ -690,7 +655,7 @@ class {$model->name}Controller extends Addons
 }
             ";
 
-            /*********************************配置信息*********************************/
+            /*             * *******************************配置信息******************************** */
 
             $Setting = "<?php
 namespace addons\\{$model->name};
@@ -736,7 +701,7 @@ class WechatMessage implements \jayfir\basics\common\interfaces\WxMsgInterface
 }
             ";
 
-            /*********************************配置模型*********************************/
+            /*             * *******************************配置模型******************************** */
             $SettingForm = "<?php
 namespace addons\\{$model->name}\common\models;
 
@@ -777,7 +742,7 @@ class SettingForm extends \yii\base\Model
 }
             ";
 
-            /*********************************配置页面*********************************/
+            /*             * *******************************配置页面******************************** */
             $SettingIndex = "<?php
 use yii\widgets\ActiveForm;
 
@@ -786,7 +751,7 @@ use yii\widgets\ActiveForm;
 ?>
             ";
 
-            $SettingIndex .=  <<<HTML
+            $SettingIndex .= <<<HTML
             
 <div class="wrapper wrapper-content animated fadeInRight">
     <?php \$form = ActiveForm::begin([
@@ -848,32 +813,30 @@ HTML;
             // 写入模型
             file_put_contents("{$addon_dir}common/models/{$model->name}.php", $CommonModel);
             // 写入参数
-            if($model->setting == true)
-            {
-                file_put_contents($addon_dir.'Setting.php', $Setting);
-                file_put_contents($addon_dir.'common/models/SettingForm.php', $SettingForm);
-                file_put_contents($addon_dir.'admin/views/setting/index.php', $SettingIndex);
+            if ($model->setting == true) {
+                file_put_contents($addon_dir . 'Setting.php', $Setting);
+                file_put_contents($addon_dir . 'common/models/SettingForm.php', $SettingForm);
+                file_put_contents($addon_dir . 'admin/views/setting/index.php', $SettingIndex);
             }
 
             // 写入文件
             $model['install'] && file_put_contents("{$addon_dir}/{$model['install']}", '<?php');
             $model['uninstall'] && file_put_contents("{$addon_dir}/{$model['uninstall']}", '<?php');
             $model['upgrade'] && file_put_contents("{$addon_dir}/{$model['upgrade']}", '<?php');
-            $model->wechat_message && file_put_contents($addon_dir.'WechatMessage.php', $WechatInfo);
+            $model->wechat_message && file_put_contents($addon_dir . 'WechatMessage.php', $WechatInfo);
             $model->wxapp_support && file_put_contents("{$addon_dir}api/controllers/PagesController.php", $wxapp_support_str);
 
             // 移动图标
-            if($model->cover)
-            {
-                copy(Yii::getAlias('@rootPath').'\web'.$model->cover,$addon_dir.'icon.jpg'); // 拷贝到新目录
+            if ($model->cover) {
+                copy(Yii::getAlias('@rootPath') . '\web' . $model->cover, $addon_dir . 'icon.jpg'); // 拷贝到新目录
             }
 
-            return $this->message('生成模块成功',$this->redirect(['install']));
+            return $this->message('生成模块成功', $this->redirect(['install']));
         }
 
-        return $this->render('create',[
-            'model' => $model,
-            'addonsType' => Yii::$app->params['addonsType']
+        return $this->render('create', [
+                    'model' => $model,
+                    'addonsType' => Yii::$app->params['addonsType']
         ]);
     }
 
@@ -885,35 +848,30 @@ HTML;
     public function actionIndex()
     {
         $request = Yii::$app->request;
-        if($request->isAjax)
-        {
+        if ($request->isAjax) {
             $keyword = $request->get('keyword');
             $type = $request->get('type');
 
             $data = Addons::find()
-                ->where(['status' => StatusEnum::ENABLED])
-                ->andFilterWhere(['like','title',$keyword])
-                ->andFilterWhere(['type' => $type]);
+                    ->where(['status' => StatusEnum::ENABLED])
+                    ->andFilterWhere(['like', 'title', $keyword])
+                    ->andFilterWhere(['type' => $type]);
 
-            $type != 'plug' && $list = $data->andFilterWhere(['<>','type','plug']);
+            $type != 'plug' && $list = $data->andFilterWhere(['<>', 'type', 'plug']);
             $list = $data->asArray()
-                ->all();
+                    ->all();
 
-            foreach ($list as &$vo)
-            {
-                if(file_exists(AddonsHelp::getAddons($vo['name']) . 'icon.jpg'))
-                {
+            foreach ($list as &$vo) {
+                if (file_exists(AddonsHelp::getAddons($vo['name']) . 'icon.jpg')) {
                     $vo['cover'] = "/addons/{$vo['name']}/icon.jpg";
-                }
-                else
-                {
+                } else {
                     $vo['cover'] = "/resource/backend/img/icon.jpg";
                 }
 
-                $vo['link'] = Url::to(['binding','addons' => $vo['name']]);
-                $vo['updateConfig'] = Url::to(['update-config','name' => $vo['name']]);
-                $vo['upgrade'] = Url::to(['upgrade','name' => $vo['name']]);
-                $vo['uninstall'] = Url::to(['uninstall','name' => $vo['name']]);
+                $vo['link'] = Url::to(['binding', 'addons' => $vo['name']]);
+                $vo['updateConfig'] = Url::to(['update-config', 'name' => $vo['name']]);
+                $vo['upgrade'] = Url::to(['upgrade', 'name' => $vo['name']]);
+                $vo['uninstall'] = Url::to(['uninstall', 'name' => $vo['name']]);
             }
 
             $result = $this->setResult();
@@ -922,21 +880,19 @@ HTML;
             $result->data = $list;
 
             return $this->getResult();
-        }
-        else
-        {
+        } else {
             $models = Addons::find()
-                ->where(['status' => StatusEnum::ENABLED])
-                ->andWhere(['<>','type','plug'])
-                ->asArray()
-                ->all();
+                    ->where(['status' => StatusEnum::ENABLED])
+                    ->andWhere(['<>', 'type', 'plug'])
+                    ->asArray()
+                    ->all();
 
             $addonsType = Yii::$app->params['addonsType']['addon']['child'];
 
-            return $this->render('index',[
-                'list' => Addons::regroupType($models),
-                'models' => $models,
-                'addonsType' => $addonsType,
+            return $this->render('index', [
+                        'list' => Addons::regroupType($models),
+                        'models' => $models,
+                        'addonsType' => $addonsType,
             ]);
         }
     }
@@ -948,32 +904,28 @@ HTML;
      */
     public function actionBinding()
     {
-        $request  = Yii::$app->request;
+        $request = Yii::$app->request;
         $addonName = $request->get('addon');
 
-        if(!($model = Addons::getAddon($addonName)))
-        {
-            return $this->message('插件不存在',$this->redirect(['index']),'error');
+        if (!($model = Addons::getAddon($addonName))) {
+            return $this->message('插件不存在', $this->redirect(['index']), 'error');
         }
 
         $list = AddonsBinding::getList($addonName);
-        if(!$list)
-        {
-            return $this->message('插件菜单未配置',$this->redirect(['index']),'error');
+        if (!$list) {
+            return $this->message('插件菜单未配置', $this->redirect(['index']), 'error');
         }
 
         // 优先跳转到业务功能菜单
-        if(isset($list['menu'][0]))
-        {
-            return $this->redirect(['execute','route' => $list['menu'][0]['route'],'addon' => $addonName]);
+        if (isset($list['menu'][0])) {
+            return $this->redirect(['execute', 'route' => $list['menu'][0]['route'], 'addon' => $addonName]);
         }
 
-        /** 插件信息加入公共配置 **/
+        /** 插件信息加入公共配置 * */
         Yii::$app->params['addon']['info'] = ArrayHelper::toArray($model);
         Yii::$app->params['addon']['binding'] = $list;
 
-        return $this->render('binding',[
-
+        return $this->render('binding', [
         ]);
     }
 
@@ -984,28 +936,26 @@ HTML;
      */
     public function actionCover()
     {
-        $request  = Yii::$app->request;
-        $id = $request->get('id','');
+        $request = Yii::$app->request;
+        $id = $request->get('id', '');
         $addon = $request->get('addon');
 
-        if(!($model = Addons::getAddon($addon)))
-        {
+        if (!($model = Addons::getAddon($addon))) {
             throw new NotFoundHttpException('插件不存在');
         }
 
-        /**插件信息加入公共配置**/
+        /*         * 插件信息加入公共配置* */
         Yii::$app->params['addon']['info'] = $model;
         Yii::$app->params['addon']['binding'] = AddonsBinding::getList($model['name']);
 
-        if(!$id && Yii::$app->params['addon']['binding'])
-        {
+        if (!$id && Yii::$app->params['addon']['binding']['cover']) {
             $id = Yii::$app->params['addon']['binding']['cover'][0]['id'];
         }
 
-        return $this->render('cover',[
-            'id' => $id,
-            'model' => $model,
-            'binding' => Yii::$app->params['addon']['binding'],
+        return $this->render('cover', [
+                    'id' => $id,
+                    'model' => $model,
+                    'binding' => Yii::$app->params['addon']['binding'],
         ]);
     }
 
@@ -1015,7 +965,15 @@ HTML;
     public function actionQr()
     {
         $getUrl = Yii::$app->request->get('shortUrl');
-        return \dosamigos\qrcode\QrCode::png($getUrl,false,0,5,4);
+
+        $qr = Yii::$app->get('qr');
+        Yii::$app->response->format = Response::FORMAT_RAW;
+        Yii::$app->response->headers->add('Content-Type', $qr->getContentType());
+
+        return $qr->setText($getUrl)
+                        ->setSize(150)
+                        ->setMargin(7)
+                        ->writeString();
     }
 
     /**
@@ -1054,23 +1012,20 @@ HTML;
         $class = $through['class'];
         $actionName = $through['actionName'];
 
-        if(!($model = Addons::getAddon($through['addon'])))
-        {
+        if (!($model = Addons::getAddon($through['addon']))) {
             throw new NotFoundHttpException('插件不存在');
         }
 
-        if(!class_exists($class))
-        {
+        if (!class_exists($class)) {
             throw new NotFoundHttpException($class . '未找到');
         }
 
-        $list = new $class($through['controller'],Yii::$app->module);
-        if(!method_exists($list,$actionName))
-        {
+        $list = new $class($through['controller'], Yii::$app->module);
+        if (!method_exists($list, $actionName)) {
             throw new NotFoundHttpException($through['controllerName'] . '/' . $actionName . '方法未找到');
         }
 
-        /** 插件信息加入公共配置 **/
+        /** 插件信息加入公共配置 * */
         Yii::$app->params['addon']['info'] = ArrayHelper::toArray($model);
         Yii::$app->params['addon']['binding'] = AddonsBinding::getList($through['addon']);
 
@@ -1085,11 +1040,11 @@ HTML;
      */
     protected function findModel($id)
     {
-        if ($model = Addons::findOne($id))
-        {
+        if ($model = Addons::findOne($id)) {
             return $model;
         }
 
         return new Addons();
     }
+
 }

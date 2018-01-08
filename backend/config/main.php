@@ -2,9 +2,13 @@
 
 $config = [
     'components' => [
-        /** ------ 后台操作日志 ------ **/
+        /** ------ 后台操作日志 ------ * */
         'actionlog' => [
             'class' => 'jayfir\basics\common\models\sys\ActionLog',
+            'qr' => [
+                'class' => '\Da\QrCode\Component\QrCodeComponent',
+            // ... you can configure more properties of the component here
+            ]
         ],
     ],
     'modules' => [

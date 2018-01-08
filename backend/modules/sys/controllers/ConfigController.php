@@ -1,4 +1,5 @@
 <?php
+
 namespace jayfir\basics\backend\modules\sys\controllers;
 
 use yii;
@@ -18,6 +19,7 @@ use backend\controllers\MController;
  */
 class ConfigController extends MController
 {
+
     /**
      * @return array
      */
@@ -33,20 +35,20 @@ class ConfigController extends MController
      */
     public function actionIndex()
     {
-        $cate = Yii::$app->request->get('cate','');
+        $cate = Yii::$app->request->get('cate', '');
         $data = Config::find()->andFilterWhere(['cate' => $cate]);
-        $pages = new Pagination(['totalCount' =>$data->count(), 'pageSize' =>$this->_pageSize]);
+        $pages = new Pagination(['totalCount' => $data->count(), 'pageSize' => $this->_pageSize]);
         $models = $data->offset($pages->offset)
-            ->orderBy('cate asc,cate_child asc,sort asc')
-            ->with('cateChild')
-            ->limit($pages->limit)
-            ->all();
+                ->orderBy('cate asc,cate_child asc,sort asc')
+                ->with('cateChild')
+                ->limit($pages->limit)
+                ->all();
 
-        return $this->render('index',[
-            'models' => $models,
-            'pages' => $pages,
-            'cate' => $cate,
-            'configCate' => ConfigCate::getListRoot(),
+        return $this->render('index', [
+                    'models' => $models,
+                    'pages' => $pages,
+                    'cate' => $cate,
+                    'configCate' => ConfigCate::getListRoot(),
         ]);
     }
 
@@ -57,18 +59,17 @@ class ConfigController extends MController
      */
     public function actionEdit()
     {
-        $request  = Yii::$app->request;
+        $request = Yii::$app->request;
         $id = $request->get('id');
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save())
-        {
-            return $this->redirect(['index','cate' => $model->cate]);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index', 'cate' => $model->cate]);
         }
 
         return $this->render('edit', [
-            'model' => $model,
-            'configTypeList' => Yii::$app->params['configTypeList'],
+                    'model' => $model,
+                    'configTypeList' => Yii::$app->params['configTypeList'],
         ]);
     }
 
@@ -81,26 +82,23 @@ class ConfigController extends MController
     {
         // 所有的配置信息
         $list = Config::find()
-            ->where(['status' => StatusEnum::ENABLED])
-            ->orderBy('sort asc')
-            ->asArray()
-            ->all();
+                ->where(['status' => StatusEnum::ENABLED])
+                ->orderBy('sort asc')
+                ->asArray()
+                ->all();
 
         // 获取全部分类并压缩到分类中
         $configCateAll = ConfigCate::getListAll();
-        foreach ($configCateAll as &$item)
-        {
-            foreach ($list as $vo)
-            {
-                if($item['id'] == $vo['cate_child'])
-                {
+        foreach ($configCateAll as &$item) {
+            foreach ($list as $vo) {
+                if ($item['id'] == $vo['cate_child']) {
                     $item['config'][] = $vo;
                 }
             }
         }
 
         return $this->render('edit-all', [
-            'configCateAll' => SysArrayHelper::itemsMerge($configCateAll),
+                    'configCateAll' => SysArrayHelper::itemsMerge($configCateAll),
         ]);
     }
 
@@ -112,13 +110,10 @@ class ConfigController extends MController
      */
     public function actionDelete($id)
     {
-        if($this->findModel($id)->delete())
-        {
-            return $this->message("删除成功",$this->redirect(['index']));
-        }
-        else
-        {
-            return $this->message("删除失败",$this->redirect(['index']),'error');
+        if ($this->findModel($id)->delete()) {
+            return $this->message("删除成功", $this->redirect(['index']));
+        } else {
+            return $this->message("删除失败", $this->redirect(['index']), 'error');
         }
     }
 
@@ -133,23 +128,21 @@ class ConfigController extends MController
         $request = Yii::$app->request;
         $result = $this->setResult();
 
-        if($request->isAjax)
-        {
-            $config = $request->post('config');
-            foreach ($config as $key => $value)
-            {
+        if ($request->isAjax) {
+            if (!($config = $request->post('config', ''))) {
+                $result->code = 200;
+                $result->message = "修改成功";
+                return $this->getResult();
+            }
+            foreach ($config as $key => $value) {
                 $model = Config::find()->where(['name' => $key])->one();
-                if($model)
-                {
+                if ($model) {
                     $model->value = is_array($value) ? serialize($value) : $value;
-                    if(!$model->save())
-                    {
+                    if (!$model->save()) {
                         $result->message = $this->analysisError($model->getFirstErrors());
                         return $this->getResult();
                     }
-                }
-                else
-                {
+                } else {
                     $result->message = "配置不存在,请刷新页面";
                     return $this->getResult();
                 }
@@ -158,9 +151,7 @@ class ConfigController extends MController
             $result->code = 200;
             $result->message = "修改成功";
             return $this->getResult();
-        }
-        else
-        {
+        } else {
             throw new NotFoundHttpException('请求出错!');
         }
     }
@@ -173,17 +164,16 @@ class ConfigController extends MController
      */
     protected function findModel($id)
     {
-        if (empty($id))
-        {
+        if (empty($id)) {
             $model = new Config;
             return $model->loadDefaultValues();
         }
 
-        if (empty(($model = Config::findOne($id))))
-        {
+        if (empty(($model = Config::findOne($id)))) {
             return new Config;
         }
 
         return $model;
     }
+
 }

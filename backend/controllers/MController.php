@@ -1,11 +1,11 @@
 <?php
+
 namespace jayfir\basics\backend\controllers;
 
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
 use yii\web\UnauthorizedHttpException;
-use common\components\WechatConfig;
 
 /**
  * 后台基类控制器
@@ -15,7 +15,19 @@ use common\components\WechatConfig;
  */
 class MController extends \common\controllers\BaseController
 {
-    use WechatConfig;
+    /**
+     * EasyWechat SDK
+     *
+     * @var
+     */
+    protected $_app;
+
+    /**
+     * EasyWechat Debug 模式，bool 值：true/false
+     *
+     * 当值为 false 时，所有的日志都不会记录
+     */
+    protected $_debug = true;
 
     /**
      * csrf验证
@@ -37,8 +49,10 @@ class MController extends \common\controllers\BaseController
      */
     public function init()
     {
+        Yii::$app->params['wechatConfig']['debug'] = $this->_debug;
+
         // 实例化EasyWechat SDK
-        $this->setApp();
+        $this->_app = Yii::$app->wechat->getApp();
 
         // 分页
         Yii::$app->config->info('SYS_PAGE') && $this->_pageSize = Yii::$app->config->info('SYS_PAGE');
@@ -69,9 +83,9 @@ class MController extends \common\controllers\BaseController
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
-                    [
+                        [
                         'allow' => true,
-                        'roles' => ['@'],// 登录
+                        'roles' => ['@'], // 登录
                     ],
                 ],
             ],
@@ -86,22 +100,19 @@ class MController extends \common\controllers\BaseController
     public function beforeAction($action)
     {
         // 验证是否登录且验证是否超级管理员
-        if (!\Yii::$app->user->isGuest && Yii::$app->user->id === Yii::$app->params['adminAccount'])
-        {
+        if (!\Yii::$app->user->isGuest && Yii::$app->user->id === Yii::$app->params['adminAccount']) {
             return true;
         }
 
-        if (!parent::beforeAction($action))
-        {
+        if (!parent::beforeAction($action)) {
             return false;
         }
 
         // 控制器+方法
-        $permissionName = Yii::$app->controller->id.'/'.Yii::$app->controller->action->id;
+        $permissionName = Yii::$app->controller->id . '/' . Yii::$app->controller->action->id;
         // 加入模块验证
-        if(Yii::$app->controller->module->id != "app-backend")
-        {
-            $permissionName = Yii::$app->controller->module->id.'/'.$permissionName;
+        if (Yii::$app->controller->module->id != "app-backend") {
+            $permissionName = Yii::$app->controller->module->id . '/' . $permissionName;
         }
 
         // 不需要RBAC判断的路由全称
@@ -110,13 +121,11 @@ class MController extends \common\controllers\BaseController
         // 不需要RBAC判断的方法
         $noAuthAction = ArrayHelper::merge(Yii::$app->params['basicsNoAuthAction'], Yii::$app->params['noAuthAction']);
 
-        if(in_array($permissionName, $noAuthRoute) || in_array(Yii::$app->controller->action->id, $noAuthAction) )
-        {
+        if (in_array($permissionName, $noAuthRoute) || in_array(Yii::$app->controller->action->id, $noAuthAction)) {
             return true;
         }
 
-        if(!Yii::$app->user->can($permissionName) && Yii::$app->getErrorHandler()->exception === null)
-        {
+        if (!Yii::$app->user->can($permissionName) && Yii::$app->getErrorHandler()->exception === null) {
             throw new UnauthorizedHttpException('对不起，您现在还没获此操作的权限');
         }
 
@@ -132,38 +141,36 @@ class MController extends \common\controllers\BaseController
      * @param int $closeTime 提示关闭时间
      * @return mixed
      */
-    public function message($msgText, $skipUrl, $msgType = "",$closeTime = 5)
+    public function message($msgText, $skipUrl, $msgType = "", $closeTime = 5)
     {
-        $closeTime = (int)$closeTime;
+        $closeTime = (int) $closeTime;
 
         // 如果是成功的提示则默认为3秒关闭时间
-        if(!$closeTime && $msgType == "success" || !$msgType)
-        {
+        if (!$closeTime && $msgType == "success" || !$msgType) {
             $closeTime = 3;
         }
 
-        $html = $this->hintText($msgText,$closeTime);
+        $html = $this->hintText($msgText, $closeTime);
 
-        switch ($msgType)
-        {
+        switch ($msgType) {
             case "success" :
-                Yii::$app->getSession()->setFlash('success',$html);
+                Yii::$app->getSession()->setFlash('success', $html);
 
                 break;
             case "error" :
-                Yii::$app->getSession()->setFlash('error',$html);
+                Yii::$app->getSession()->setFlash('error', $html);
 
                 break;
             case "info" :
-                Yii::$app->getSession()->setFlash('info',$html);
+                Yii::$app->getSession()->setFlash('info', $html);
 
                 break;
             case "warning" :
-                Yii::$app->getSession()->setFlash('warning',$html);
+                Yii::$app->getSession()->setFlash('warning', $html);
 
                 break;
             default :
-                Yii::$app->getSession()->setFlash('success',$html);
+                Yii::$app->getSession()->setFlash('success', $html);
 
                 break;
         }
@@ -178,7 +185,7 @@ class MController extends \common\controllers\BaseController
      */
     public function hintText($msg, $closeTime)
     {
-        $text = $msg." <span class='closeTimeYl'>".$closeTime."</span>秒后自动关闭...";
+        $text = $msg . " <span class='closeTimeYl'>" . $closeTime . "</span>秒后自动关闭...";
         return $text;
     }
 
@@ -199,17 +206,15 @@ class MController extends \common\controllers\BaseController
         $model = $this->findModel($id);
         $model->attributes = $insert_data;
 
-        if(!$model->save())
-        {
+        if (!$model->save()) {
             $result->code = 422;
             $result->message = $this->analysisError($model->getFirstErrors());
-        }
-        else
-        {
+        } else {
             $result->code = 200;
             $result->message = '修改成功';
         }
 
         return $this->getResult();
     }
+
 }
