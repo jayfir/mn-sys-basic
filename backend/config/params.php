@@ -6,6 +6,7 @@ return [
     'exploitName' => 'jayfir',
     'exploitVersions' => '1.2.0',
     'exploitSysName' => 'JjayFir核心框架',
+    'exploitQqGroup'=>'342797762',
     'exploitOfficialWebsite' => '<a href="http://www.coderfarmer.com" target="_blank">www.coderfarmer.com</a>',
     'exploitGitHub' => '<a href="https://github.com/jayfir/mn-sys-basic.git" target="_blank">github.com/jayfir/mn-sys-basic.git</a>',
     'exploitGit@OSC' => '<a href="https://git.oschina.net/jayfir/mn-sys-basic.git" target="_blank">git.oschina.net/jayfir/mn-sys-basic.git</a>',

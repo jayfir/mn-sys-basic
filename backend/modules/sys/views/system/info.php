@@ -115,7 +115,7 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
                     </tr>
                     <tr>
                         <td>官方QQ群</td>
-                        <td><a href="https://jq.qq.com/?_wv=1027&amp;k=4BeVA2r" target="_blank">655084090</a></td>
+                        <td><a href="https://jq.qq.com/?_wv=1027&amp;k=4BeVA2r" target="_blank"><?= Yii::$app->params['exploitQqGroup']?></a></td>
                     </tr>
                     <tr>
                         <td>问题反馈(qq同号)</td>
