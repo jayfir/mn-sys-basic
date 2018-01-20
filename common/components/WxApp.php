@@ -37,6 +37,8 @@ class WxApp extends BaseController
      * @var
      */
     protected $_accountId;
+    
+    protected $_prefix = 'wxapp:auth:';
 
     /**
      * 自动运行
@@ -171,7 +173,7 @@ class WxApp extends BaseController
      */
     protected function setAuth($oauth)
     {
-        $auth_key = Yii::$app->security->generateRandomString() . '_' . time();
+       $auth_key = $this->_prefix . Yii::$app->security->generateRandomString() . '_' . time();
 
         Yii::$app->cache->set($auth_key,ArrayHelper::toArray($oauth), 7195);
 
@@ -186,6 +188,7 @@ class WxApp extends BaseController
      */
     protected function getAuth($auth_key)
     {
+        $auth_key = $this->_prefix . $auth_key;
        return Yii::$app->cache->get($auth_key);
     }
 }

@@ -92,7 +92,7 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
                             <div class="flex-row hAlignCenter normalPadding postToolbar">
                                 <?php if($item['link_type'] == 1){ ?>
                                     <div class="flex-col"><a href="<?= Url::to(['mass-record/send-fans','attach_id'=> $item['id']])?>"  title="群发" data-toggle='modal' data-target='#ajaxModal'><i class="fa fa-send"></i></a></div>
-                                    <div class="flex-col"><a href="<?= Url::to(['news-edit','attach_id'=> $item['id']])?>" title="编辑"><i class="fa fa-edit"></i></a></div>
+                                    <div class="flex-col"><a href="<?= Url::to(['news-edit','attach_id'=> $item['id']])?>" title="编辑"><i class="fa fa-pencil"></i></a></div>
                                 <?php }else{ ?>
                                     <div class="flex-col"><a href="<?= Url::to(['news-link-edit','attach_id'=> $item['id']])?>" title="编辑"><i class="fa fa-edit"></i></a></div>
                                 <?php } ?>

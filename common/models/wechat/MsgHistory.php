@@ -22,10 +22,12 @@ use common\enums\StatusEnum;
  */
 class MsgHistory extends ActiveRecord
 {
+
     /**
      * 默认规则
      */
     const DEFAULT_RULE = 0;
+
     /**
      * 默认关键字
      */
@@ -45,10 +47,10 @@ class MsgHistory extends ActiveRecord
     public function rules()
     {
         return [
-            [['rule_id', 'keyword_id', 'append'], 'integer'],
-            [['openid', 'module'], 'string', 'max' => 50],
-            [['message'], 'string', 'max' => 1000],
-            [['type'], 'string', 'max' => 10],
+                [['rule_id', 'keyword_id', 'append'], 'integer'],
+                [['openid', 'module'], 'string', 'max' => 50],
+                [['message'], 'string', 'max' => 1000],
+                [['type'], 'string', 'max' => 10],
         ];
     }
 
@@ -58,14 +60,14 @@ class MsgHistory extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'        => 'ID',
-            'rule_id'   => '规则id',
+            'id' => 'ID',
+            'rule_id' => '规则id',
             'keyword_id' => '关键字id',
-            'openid'    => 'Openid',
-            'module'    => '模块id',
-            'message'   => '内容',
-            'type'      => '类别',
-            'append'    => '创建时间',
+            'openid' => 'Openid',
+            'module' => '模块id',
+            'message' => '内容',
+            'type' => '类别',
+            'append' => '创建时间',
         ];
     }
 
@@ -75,21 +77,17 @@ class MsgHistory extends ActiveRecord
      * @param $msg_history
      * @param $reply
      */
-    public static function add($message,$msg_history,$reply)
+    public static function add($message, $msg_history, $reply)
     {
         $add = $reply ? ArrayHelper::merge($msg_history, $reply) : $msg_history;
 
         // 历史记录状态
         $setting = Setting::getSetting('history');
-        if($setting['is_msg_history']['status'] != StatusEnum::DELETE)
-        {
+        if ($setting['is_msg_history']['status'] != StatusEnum::DELETE) {
             $msgHistory = new MsgHistory();
-            if($msg_history['type'] == 'text')
-            {
+            if ($msg_history['type'] == 'text') {
                 $add['message'] = $message['Content'];
-            }
-            else
-            {
+            } else {
                 $add['message'] = self::filtrate($message);
             }
 
@@ -98,8 +96,7 @@ class MsgHistory extends ActiveRecord
         }
 
         // 统计状态
-        if($setting['is_utilization_stat']['status'] != StatusEnum::DELETE)
-        {
+        if ($setting['is_utilization_stat']['status'] != StatusEnum::DELETE) {
             // 插入规则统计
             !empty($add['rule_id']) && RuleStat::setStat($add['rule_id']);
             // 插入关键字统计
@@ -115,11 +112,9 @@ class MsgHistory extends ActiveRecord
     public static function filtrate($message)
     {
         $arr = [];
-        $filtrate = ['ToUserName','FromUserName','MsgId','CreateTime','MsgType'];
-        foreach ($message as $key => $value)
-        {
-            if(!in_array($key,$filtrate))
-            {
+        $filtrate = ['ToUserName', 'FromUserName', 'MsgId', 'CreateTime', 'MsgType'];
+        foreach ($message as $key => $value) {
+            if (!in_array($key, $filtrate)) {
                 $arr[$key] = $value;
             }
         }
@@ -133,10 +128,9 @@ class MsgHistory extends ActiveRecord
      * @param $messgae
      * @return mixed|string
      */
-    public static function readMessage($type,$messgae)
+    public static function readMessage($type, $messgae)
     {
-        switch ($type)
-        {
+        switch ($type) {
             case Account::TYPE_TEXT :
                 return $messgae;
                 break;
@@ -153,7 +147,7 @@ class MsgHistory extends ActiveRecord
 
             case Account::TYPE_LOCATION :
                 $messgae = unserialize($messgae);
-                return '主动发送位置：经纬度【'.$messgae['Location_X'] . ',' . $messgae['Location_Y'] . "】地址:" . $messgae['Label'];
+                return '主动发送位置：经纬度【' . $messgae['Location_X'] . ',' . $messgae['Location_Y'] . "】地址:" . $messgae['Label'];
                 break;
 
             case Account::TYPE_CILCK :
@@ -170,18 +164,17 @@ class MsgHistory extends ActiveRecord
                 return isset($messgae['Recognition']) ? $messgae['Recognition'] : '语音消息';
                 break;
 
-                // 触发事件
+            // 触发事件
             case Account::TYPE_EVENT :
 
                 $messgae = unserialize($messgae);
-                switch ($messgae['Event'])
-                {
+                switch ($messgae['Event']) {
                     case Account::TYPE_UN_SUBSCRIBE :
                         return '取消关注公众号';
                         break;
 
                     case Account::TYPE_EVENT_LOCATION :
-                        return '被动发送位置：经纬度【'.$messgae['Latitude'] . ',' . $messgae['Longitude'] . "】精度:" . $messgae['Precision'];
+                        return '被动发送位置：经纬度【' . $messgae['Latitude'] . ',' . $messgae['Longitude'] . "】精度:" . $messgae['Precision'];
                         break;
 
                     case Account::TYPE_EVENT_VIEW :
@@ -194,7 +187,7 @@ class MsgHistory extends ActiveRecord
 
                     case 'location_select' :
                         $sendLocationInfo = $messgae['SendLocationInfo'];
-                        return "主动发送位置：" . '经纬度【'.$sendLocationInfo['Location_X'] . ',' . $sendLocationInfo['Location_Y'] . "】地址:" . $sendLocationInfo['Label'];
+                        return "主动发送位置：" . '经纬度【' . $sendLocationInfo['Location_X'] . ',' . $sendLocationInfo['Location_Y'] . "】地址:" . $sendLocationInfo['Label'];
                         break;
 
                     case 'scancode_waitmsg' :
@@ -213,6 +206,9 @@ class MsgHistory extends ActiveRecord
                     case 'scancode_push' :
                         $scanCodeInfo = $messgae['ScanCodeInfo'];
                         return "调用二维码直接扫描返回地址:" . $scanCodeInfo['ScanResult'];
+                        break;
+                    case 'MASSSENDJOBFINISH' :
+                        return "点击图文MsgID为:" . $messgae['MsgID'];
                         break;
 
                     default :
@@ -243,7 +239,7 @@ class MsgHistory extends ActiveRecord
     public function behaviors()
     {
         return [
-            [
+                [
                 'class' => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => ['append'],
@@ -251,4 +247,5 @@ class MsgHistory extends ActiveRecord
             ],
         ];
     }
+
 }

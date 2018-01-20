@@ -1,11 +1,9 @@
 <?php
 namespace jayfir\basics\common\models\wechat;
-
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use jayfir\basics\common\models\sys\Addons;
-
 /**
  * This is the model class for table "{{%wechat_reply_default}}".
  *
@@ -24,7 +22,6 @@ class ReplyDefault extends ActiveRecord
     {
         return '{{%wechat_reply_default}}';
     }
-
     /**
      * @inheritdoc
      */
@@ -35,7 +32,6 @@ class ReplyDefault extends ActiveRecord
             [['follow_content', 'default_content'], 'string', 'max' => 255],
         ];
     }
-
     /**
      * @inheritdoc
      */
@@ -49,10 +45,9 @@ class ReplyDefault extends ActiveRecord
             'updated'           => '修改时间',
         ];
     }
-
     /**
      * 返回回复信息
-     * 如果是特殊消息进来的的$message是一个对象
+     * 如果是特殊消息进来的的$message是一个数组
      *
      * @param string $type 触发的类型 follow:关注;text:文字信息
      * @param null $message 用户发送的内容
@@ -63,23 +58,18 @@ class ReplyDefault extends ActiveRecord
         $defaultModel = self::findDefault();
         // 默认回复内容
         $reply = $type == 'follow' ? $defaultModel->follow_content :  $defaultModel->default_content;
-
         switch ($type)
         {
             /** 系统关注回复 **/
             case "follow" :
-
                 $default = RuleKeyword::match($reply);
                 if($default)
                 {
                     return $default;
                 }
-
                 break;
-
             /** 文字回复关注 **/
             case "text" :
-
                 // 查询用户关键字匹配
                 $default = RuleKeyword::match($message);
                 if($default == false)
@@ -88,26 +78,23 @@ class ReplyDefault extends ActiveRecord
                     $default = RuleKeyword::match($reply);
                     $default && $default['module'] = Rule::RULE_MODULE_DEFAULT;
                 }
-
                 // 查询关键字并返回
-                if($default)
+                if ($default)
                 {
                     return $default;
                 }
-
                 break;
-
             /** 特殊消息回复 **/
             case "special" :
-
                 $reply = null;
+                $msgType = $message['MsgType'];
                 $special = Setting::getSetting('special');
-                if(isset($special[$message['MsgType']]))
+                if (isset($special[$msgType]))
                 {
                     // 关键字
-                    if($special[$message['MsgType']]['type'] == Setting::SPECIAL_TYPE_KEYWORD)
+                    if ($special[$msgType]['type'] == Setting::SPECIAL_TYPE_KEYWORD)
                     {
-                        if($default = RuleKeyword::match($special[$message['MsgType']]['content']))
+                        if ($default = RuleKeyword::match($special[$msgType]['content']))
                         {
                             return $default;
                         }
@@ -115,24 +102,21 @@ class ReplyDefault extends ActiveRecord
                     else
                     {
                         // 模块处理
-                        !empty($special[$message['MsgType']]['selected']) && $reply = Addons::getWechatMessage($message, $special[$message['MsgType']]['selected']);
-                        if($reply)
+                        !empty($special[$msgType]['selected']) && $reply = Addons::getWechatMessage($message, $special[$msgType]['selected']);
+                        if ($reply)
                         {
                             return [
                                 'content' => $reply,
-                                'module'  => $special[$message['MsgType']]['selected']
+                                'module'  => $special[$msgType]['selected']
                             ];
                         }
                     }
                 }
-
                 break;
         }
-
         // 返回默认回复
         return $reply ? ['content' => $reply, 'module'  => Rule::RULE_MODULE_DEFAULT] : false;
     }
-
     /**
      * 查询默认回复
      *
@@ -144,10 +128,8 @@ class ReplyDefault extends ActiveRecord
         {
             return $model;
         }
-
         return new ReplyDefault();
     }
-
     /**
      * 行为
      *
