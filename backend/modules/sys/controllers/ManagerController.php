@@ -7,7 +7,7 @@ use jayfir\basics\common\models\sys\Manager;
 use jayfir\basics\backend\modules\sys\models\PasswdForm;
 use jayfir\basics\backend\modules\sys\models\AuthItem;
 use jayfir\basics\backend\modules\sys\models\AuthAssignment;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 后台用户控制器

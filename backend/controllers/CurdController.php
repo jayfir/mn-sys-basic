@@ -1,8 +1,10 @@
 <?php
+
 namespace jayfir\basics\backend\controllers;
 
 use Yii;
 use yii\base\InvalidConfigException;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 快速创建增删改查基类
@@ -10,8 +12,9 @@ use yii\base\InvalidConfigException;
  * Class CurdController
  * @package jayfir\basics\backend\controllers
  */
-class CurdController extends \backend\controllers\MController
+class CurdController extends MController
 {
+
     /**
      * 基础属性类
      *
@@ -72,8 +75,7 @@ class CurdController extends \backend\controllers\MController
     public function init()
     {
         parent::init();
-        if ($this->modelClass === null)
-        {
+        if ($this->modelClass === null) {
             throw new InvalidConfigException('"modelClass" 属性必须设置');
         }
     }
@@ -108,4 +110,5 @@ class CurdController extends \backend\controllers\MController
             ],
         ];
     }
+
 }

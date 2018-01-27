@@ -4,7 +4,7 @@ namespace jayfir\basics\backend\modules\sys\controllers;
 use yii;
 use jayfir\basics\backend\modules\sys\models\AuthItem;
 use common\helpers\SysArrayHelper;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * RBAC权限控制器

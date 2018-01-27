@@ -6,7 +6,7 @@ use yii\data\Pagination;
 use jayfir\basics\common\models\wxapp\Account;
 use jayfir\basics\common\models\wxapp\Versions;
 use jayfir\basics\common\models\sys\Addons;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 小程序控制器

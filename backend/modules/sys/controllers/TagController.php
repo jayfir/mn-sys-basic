@@ -4,7 +4,7 @@ namespace jayfir\basics\backend\modules\sys\controllers;
 use yii;
 use yii\data\Pagination;
 use jayfir\basics\common\models\sys\Tag;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 标签管理控制器

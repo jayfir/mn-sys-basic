@@ -5,7 +5,7 @@ use yii;
 use yii\helpers\Html;
 use yii\web\Response;
 use jayfir\basics\common\models\sys\Provinces;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 省市区联动控制器

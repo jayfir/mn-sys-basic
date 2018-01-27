@@ -5,7 +5,7 @@ use yii;
 use yii\data\Pagination;
 use yii\web\NotFoundHttpException;
 use jayfir\basics\common\models\sys\NotifyCate;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 公告分类控制器

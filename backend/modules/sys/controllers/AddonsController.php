@@ -14,7 +14,7 @@ use common\enums\StatusEnum;
 use common\helpers\AddonsHelp;
 use common\helpers\StringHelper;
 use common\helpers\FileHelper;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 插件控制器

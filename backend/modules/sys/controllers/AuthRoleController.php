@@ -4,7 +4,7 @@ namespace jayfir\basics\backend\modules\sys\controllers;
 use yii;
 use yii\data\Pagination;
 use common\helpers\SysArrayHelper;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 use jayfir\basics\backend\modules\sys\models\AuthItem;
 use jayfir\basics\backend\modules\sys\models\AuthItemChild;
 use jayfir\basics\backend\modules\sys\models\AuthAssignment;

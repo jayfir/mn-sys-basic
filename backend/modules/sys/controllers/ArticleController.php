@@ -7,7 +7,7 @@ use jayfir\basics\common\models\sys\Article;
 use jayfir\basics\common\models\sys\Tag;
 use jayfir\basics\common\models\sys\TagMap;
 use common\enums\StatusEnum;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 文章管理控制器

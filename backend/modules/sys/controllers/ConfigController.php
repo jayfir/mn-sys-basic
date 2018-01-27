@@ -9,7 +9,7 @@ use jayfir\basics\common\models\sys\Config;
 use jayfir\basics\common\models\sys\ConfigCate;
 use common\helpers\SysArrayHelper;
 use common\enums\StatusEnum;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 系统配置控制器

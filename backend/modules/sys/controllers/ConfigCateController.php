@@ -5,7 +5,7 @@ use yii;
 use yii\helpers\Html;
 use common\helpers\SysArrayHelper;
 use backend\controllers\MController;
-use jayfir\basics\common\models\sys\ConfigCate;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 配置分类控制器

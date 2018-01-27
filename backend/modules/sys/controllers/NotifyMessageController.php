@@ -5,7 +5,7 @@ use yii;
 use yii\data\Pagination;
 use jayfir\basics\common\models\sys\Notify;
 use jayfir\basics\common\models\sys\NotifyManager;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 消息控制器

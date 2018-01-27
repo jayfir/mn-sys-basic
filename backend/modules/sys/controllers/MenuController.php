@@ -3,7 +3,7 @@ namespace jayfir\basics\backend\modules\sys\controllers;
 
 use yii;
 use common\helpers\SysArrayHelper;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 use jayfir\basics\backend\modules\sys\models\Menu;
 
 /**

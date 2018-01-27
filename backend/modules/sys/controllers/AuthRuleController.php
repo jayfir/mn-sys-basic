@@ -6,7 +6,7 @@ use yii\data\Pagination;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use jayfir\basics\backend\modules\sys\models\AuthRule;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * RBAC规则控制器

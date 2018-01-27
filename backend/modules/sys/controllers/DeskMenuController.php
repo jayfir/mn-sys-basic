@@ -4,7 +4,7 @@ namespace jayfir\basics\backend\modules\sys\controllers;
 use Yii;
 use jayfir\basics\common\models\sys\DeskMenu;
 use common\helpers\SysArrayHelper;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 前台导航控制器

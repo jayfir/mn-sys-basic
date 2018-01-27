@@ -5,7 +5,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use jayfir\basics\backend\modules\sys\models\Menu;
 use jayfir\basics\common\library\ServerInfo;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 use common\helpers\FileHelper;
 use common\enums\StatusEnum;
 

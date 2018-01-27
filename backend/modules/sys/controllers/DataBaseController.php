@@ -5,7 +5,7 @@ namespace jayfir\basics\backend\modules\sys\controllers;
 use Yii;
 use yii\web\Response;
 use jayfir\basics\common\models\sys\Database;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 数据库备份还原控制器

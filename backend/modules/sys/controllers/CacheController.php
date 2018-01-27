@@ -3,7 +3,7 @@ namespace jayfir\basics\backend\modules\sys\controllers;
 
 use yii;
 use yii\caching\FileCache;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 缓存清理控制器

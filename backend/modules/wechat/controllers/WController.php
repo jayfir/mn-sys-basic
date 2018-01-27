@@ -1,8 +1,9 @@
 <?php
+
 namespace jayfir\basics\backend\modules\wechat\controllers;
 
 use yii;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 微信基类控制器
@@ -12,5 +13,5 @@ use backend\controllers\MController;
  */
 class WController extends MController
 {
-
+    
 }

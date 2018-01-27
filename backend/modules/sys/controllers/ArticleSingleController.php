@@ -3,7 +3,7 @@ namespace jayfir\basics\backend\modules\sys\controllers;
 
 use yii;
 use jayfir\basics\common\models\sys\ArticleSingle;
-use backend\controllers\MController;
+use jayfir\basics\backend\controllers\MController;
 
 /**
  * 单页管理控制器
