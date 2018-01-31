@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = ['label' =>  $this->title];
                                 <td><?= ActionLog::$behavior[$model->action]?></td>
                                 <td><?= urldecode($model->log_url)?></td>
                                 <td><?= Yii::$app->formatter->asDatetime($model->append)?></td>
-                                <td><?= long2ip($model->action_ip)?></td>
+                                <td><?= long2ip(intval($model->action_ip))?></td>
                                 <td><?= $model->country." ".$model->province." ".$model->city ?></td>
                                 <td>
                                     <a href="<?= Url::to(['delete','id'=>$model->id])?>" onclick="rfDelete(this);return false;"><span class="btn btn-warning btn-sm">删除</span></a>
