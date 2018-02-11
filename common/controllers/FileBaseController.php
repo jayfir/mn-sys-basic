@@ -150,7 +150,7 @@ class FileBaseController extends \common\controllers\BaseController
         {
             $file = $_FILES['file'];
             $qiniu = new Qiniu($ak, $sk,$domain, $bucket);
-            $key = 'rf_qiniu_' . time() . StringHelper::randomNum();
+            $key = 'mn_qiniu_' . time() . StringHelper::randomNum();
             $qiniu->uploadFile($file['tmp_name'],$key);
             $url = $qiniu->getLink($key);
 
@@ -187,7 +187,7 @@ class FileBaseController extends \common\controllers\BaseController
             $file = $_FILES['file'];
             $file_name = $file['name'];// 原名称
             $file_exc = StringHelper::clipping($file_name);// 后缀
-            $name = 'rf_alioss_' . time() . StringHelper::randomNum() . $file_exc;
+            $name = 'mn_alioss_' . time() . StringHelper::randomNum() . $file_exc;
             $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
             $oosResult = $ossClient->uploadFile($bucket,$name,$file['tmp_name']);
             // 私有获取图片信息
