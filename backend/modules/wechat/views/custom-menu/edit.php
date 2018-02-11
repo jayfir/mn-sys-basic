@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
@@ -8,17 +9,17 @@ $this->params['breadcrumbs'][] = ['label' => '自定义菜单', 'url' => ['index
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<?=Html::cssFile('/resource/backend/css/common.css')?>
-<?=Html::jsFile('/resource/backend/js/vue.min.js')?>
-<?=Html::jsFile('/resource/backend/js/Sortable.min.js')?>
-<?=Html::jsFile('/resource/backend/js/vuedraggable.min.js')?>
+<?= Html::cssFile('/resource/backend/css/common.css') ?>
+<?= Html::jsFile('/resource/backend/js/vue.min.js') ?>
+<?= Html::jsFile('/resource/backend/js/Sortable.min.js') ?>
+<?= Html::jsFile('/resource/backend/js/vuedraggable.min.js') ?>
 
 <style>
-	.menuView{
-		height: 500px;
-		position: relative;
-		background-color: white;
-	}
+    .menuView{
+        height: 500px;
+        position: relative;
+        background-color: white;
+    }
 
     .menuView .btn-white{
         line-height: 25px;
@@ -34,14 +35,14 @@ $this->params['breadcrumbs'][] = $this->title;
         color: #079200;
     }
 
-	.custommenu{
-		position: relative;
-	}
-	.custommenu_sub_container{
-		position: absolute;
-		width: 100%;
-		bottom: 100%;
-	}
+    .custommenu{
+        position: relative;
+    }
+    .custommenu_sub_container{
+        position: absolute;
+        width: 100%;
+        bottom: 100%;
+    }
 
     .ng-binding {
         font-size: 15px;
@@ -77,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div id="vueArea" class="wrapper wrapper-content animated fadeInRight">
     <?php $form = ActiveForm::begin(); ?>
     <div class="row col-sm-offset-2">
-    	<!-- 菜单编辑模式 -->
+        <!-- 菜单编辑模式 -->
         <div class="col-sm-3" style="width: 362px">
             <div class="ibox float-e-margins">
                 <div class="phone-header">
@@ -90,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div v-for="(item,index) in list" class="flex-col custommenu">
                                 <div class="custommenu_sub_container">
                                     <draggable v-model="item.sub" :options="{group:'subMenu' + index}">
-                                        <div v-for="sub in item.sub">
+                                               <div v-for="sub in item.sub">
                                             <a class="btn btn-block btn-white" :class="{active:crtItem === sub}" @click="crtItem = sub">{{sub.name}}</a>
                                         </div>
                                     </draggable>
@@ -123,7 +124,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
         <!--
-        	added by wzq 自定义菜单操作区
+                added by wzq 自定义菜单操作区
         -->
         <div class="col-sm-6" v-if="crtItem">
             <div class="ibox float-e-margins">
@@ -142,17 +143,42 @@ $this->params['breadcrumbs'][] = $this->title;
                             <label class="control-label">菜单动作</label>
                             <div class="row">
                                 <div class="col-sm-12">
-                                        <?php foreach ($menuTypes as $key => $menuType){ ?>
-                                            <label>
-                                                <input type="radio" value="<?= $key ?>" name="ipt" v-model="crtItem.type"> <i></i> <?= $menuType['name'] ?>
-                                            </label>
-                                        <?php } ?>
+                                    <?php foreach ($menuTypes as $key => $menuType) { ?>
+                                        <label>
+                                            <input type="radio" value="<?= $key ?>" name="ipt" v-model="crtItem.type"> <i></i> <?= $menuType['name'] ?>
+                                        </label>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group" v-show="!hasSubItem(crtItem) && needContent(crtItem)">
                             <hr>
                             <input class="form-control" name="value" value="" aria-required="true" type="text" v-model="crtItem.content">
+                        </div>
+                        <!-- 小程序 -->
+                        <div class="form-group" v-show="!hasSubItem(crtItem) && needMiniprogram(crtItem)">
+                            <hr>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">APPID</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" name="value" placeholder="请确保小程序与公众号已关联，填写小程序的APPID" value="" aria-required="true" type="text" v-model="crtItem.appid">
+                                    <span class="help-block"><a href="http://weixiao.qq.com/notice/view?mid=0&cid=2&id=274" target="_blank">如何获取?</a></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">页面</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" name="value" placeholder="请填写跳转页面的小程序访问路径" value="" aria-required="true" type="text" v-model="crtItem.pagepath">
+                                    <span class="help-block"><a href="http://weixiao.qq.com/notice/view?mid=0&cid=2&id=275" target="_blank">填写指引</a></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">备用网页</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" name="value" placeholder="写入要跳转的链接" value="" aria-required="true" type="text" v-model="crtItem.url">
+                                    <span class="help-block">旧版微信客户端不支持小程序，用户点击菜单时会打开该网页</span>
+                                </div>
+                            </div>
                         </div>
                     </div>　
                 </div>
@@ -163,7 +189,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <script>
-    $(function(){
+    $(function () {
         // 兼容老IE
         document.body.ondrop = function (event) {
             event = event || window.event;
@@ -179,14 +205,15 @@ $this->params['breadcrumbs'][] = $this->title;
         var list = '<?php echo json_encode(unserialize($model->data)) ?>';
         list = JSON.parse(list);
 
-        for (var i=0; i<list.length; i++){
+        for (var i = 0; i < list.length; i++) {
             var item = list[i];
-            if(!item.sub)item.sub = [];
+            if (!item.sub)
+                item.sub = [];
         }
 
-        console.log(list);
+        // console.log(list);
         var vueArea = new Vue({
-            data:{
+            data: {
                 list: list ? list : [],
                 maxItemCount: 3,
                 maxSubItemCount: 5,
@@ -194,24 +221,24 @@ $this->params['breadcrumbs'][] = $this->title;
                 isSortMode: false
             },
             methods: {
-                addItem: function(){
-                    var newOne = {name: '菜单名称', sub:[], type:'click',content:''};
+                addItem: function () {
+                    var newOne = {name: '菜单名称', sub: [], type: 'click', content: ''};
                     this.list.push(newOne);
                     this.crtItem = newOne;
                 },
-                addSubItem: function(subList){
-                    var newOne = {name:'子菜单名称', type:'click',content:''};
+                addSubItem: function (subList) {
+                    var newOne = {name: '子菜单名称', type: 'click', content: ''};
                     subList.push(newOne);
                     this.crtItem = newOne;
                 },
-                deleteCrtItem: function(){
-                	var self = this;
+                deleteCrtItem: function () {
+                    var self = this;
 
-                	function doDelete(){
+                    function doDelete() {
                         var itemIndex;
                         for (var i = 0; i < self.list.length; i++) {
                             var item = self.list[i];
-                            if(item == self.crtItem)
+                            if (item == self.crtItem)
                             {
                                 self.list.splice(i, 1);
                                 self.crtItem = null;
@@ -226,47 +253,69 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     }
 
-                	if(self.crtItem.sub){
+                    if (self.crtItem.sub) {
                         appConfirm("您确定要删除这个菜单吗？", "删除后将无法恢复，请谨慎操作！", doDelete)
-                    }else{
+                    } else {
                         doDelete();
                     }
                 },
-                submitForm: function(){
+                submitForm: function () {
                     // 检查子菜单类别是否都填了
                     var self = this;
-                    function checkValidate(item){
+                    function checkValidate(item) {
                         var needContent = self.needContent(item);
-                        if(needContent && !item.content)
+                        if (needContent && !item.content)
                         {
-                            rfAffirm('请填写"'+item.name+'"的' + needContent);
+                            rfAffirm('请填写"' + item.name + '"的' + needContent);
                             self.crtItem = item;
                             return false;
                         }
-	                    if(item.type == 'view' && !new RegExp('^(http|https|ftp)\://([a-zA-Z0-9\.\-]+(\:[a-zA-Z0-9\.&%\$\-]+)*@)*((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|localhost|([a-zA-Z0-9\-]+\.)*[a-zA-Z0-9\-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(\:[0-9]+)*(/($|[a-zA-Z0-9\.\,\?\'\\\+&%\$#\=~_\-]+))*$').test(item.content))
-			    		{
+                        if (item.type == 'view' && !new RegExp('^(http|https|ftp)\://([a-zA-Z0-9\.\-]+(\:[a-zA-Z0-9\.&%\$\-]+)*@)*((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|localhost|([a-zA-Z0-9\-]+\.)*[a-zA-Z0-9\-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(\:[0-9]+)*(/($|[a-zA-Z0-9\.\,\?\'\\\+&%\$#\=~_\-]+))*$').test(item.content))
+                        {
                             rfAffirm('您填写的链接地址格式不正确');
-			            	self.crtItem = item;
-			            	return false;
-			    		}
+                            self.crtItem = item;
+                            return false;
+                        }
+                        // 小程序判断
+                        if (item.type == 'miniprogram')
+                        {
+                            if (!item.appid)
+                            {
+                                rfAffirm('请填写appid');
+                                self.crtItem = item;
+                                return false;
+                            }
+                            if (!item.pagepath)
+                            {
+                                rfAffirm('请填写页面');
+                                self.crtItem = item;
+                                return false;
+                            }
+                            if (!item.url)
+                            {
+                                rfAffirm('请填写备用网页');
+                                self.crtItem = item;
+                                return false;
+                            }
+                        }
+
                         return true;
                     }
-                    for(var i = 0; i < this.list.length; i++) {
+                    for (var i = 0; i < this.list.length; i++) {
                         var item = this.list[i];
-                        if(this.hasSubItem(item))
+                        if (this.hasSubItem(item))
                         {
-                            for(var j = 0; j < item.sub.length; j++)
+                            for (var j = 0; j < item.sub.length; j++)
                             {
                                 var subItem = item.sub[j];
-                                if(!checkValidate(subItem))
+                                if (!checkValidate(subItem))
                                 {
                                     return;
                                 }
                             }
-                        }
-                        else
+                        } else
                         {
-                            if(!checkValidate(item))
+                            if (!checkValidate(item))
                             {
                                 return;
                             }
@@ -274,38 +323,41 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
 
                     var prevent = true;
-                    if(prevent){
+                    if (prevent) {
                         prevent = false;
                         var id = '<?php echo $model->id ?>';
                         var title = $('#custommenu-title').val();
                         $.ajax({
-                            type:"post",
-                            url:"<?= Url::to(['edit'])?>",
+                            type: "post",
+                            url: "<?= Url::to(['edit']) ?>",
                             dataType: "json",
-                            data: {id:id,list:this.list,title:title},
-                            success: function(data){
+                            data: {id: id, list: this.list, title: title},
+                            success: function (data) {
                                 prevent = true;
-                                if(data.code == 404) {
+                                if (data.code == 404) {
                                     rfAffirm(data.message);
-                                }else{
+                                } else {
                                     window.location = '<?= Url::to(['index']) ?>';
                                 }
                             }
                         });
                     }
                 },
-                back: function(){
+                back: function () {
                     window.history.go(-1);
                 },
-                hasSubItem: function(item){
+                hasSubItem: function (item) {
                     return item.sub && item.sub.length > 0;
                 },
-                needContent: function(item){
+                needContent: function (item) {
                     var dic = {click: '触发关键字', view: '跳转链接'}
                     return dic[item.type];
-                }
+                },
+                needMiniprogram: function (item) {
+                    var dic = {miniprogram: '关联小程序'}
+                    return dic[item.type];
+                },
             }
         }).$mount('#vueArea');
     })
 </script>
-
