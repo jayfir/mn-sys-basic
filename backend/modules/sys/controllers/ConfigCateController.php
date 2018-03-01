@@ -4,7 +4,6 @@ namespace jayfir\basics\backend\modules\sys\controllers;
 use yii;
 use yii\helpers\Html;
 use common\helpers\SysArrayHelper;
-use backend\controllers\MController;
 use jayfir\basics\backend\controllers\MController;
 
 /**
