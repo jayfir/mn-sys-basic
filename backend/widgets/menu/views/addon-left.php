@@ -1,6 +1,6 @@
 <?php
 use yii\helpers\Url;
-use jianyan\basics\common\models\sys\AddonsBinding;
+use jayfir\basics\common\models\sys\AddonsBinding;
 use common\helpers\AddonsUrl;
 use common\enums\StatusEnum;
 

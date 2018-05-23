@@ -1,7 +1,7 @@
 <?php
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
-use jianyan\basics\common\models\wechat\Fans;
+use jayfir\basics\common\models\wechat\Fans;
 
 $this->title = '粉丝列表';
 $this->params['breadcrumbs'][] = ['label' =>  $this->title];

@@ -3,8 +3,8 @@
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
 use yii\widgets\ActiveForm;
-use jianyan\basics\backend\widgets\menu\AddonLeftWidget;
-use jianyan\basics\common\models\wechat\RuleKeyword;
+use jayfir\basics\backend\widgets\menu\AddonLeftWidget;
+use jayfir\basics\common\models\wechat\RuleKeyword;
 use common\enums\StatusEnum;
 
 $this->title = '规则管理';
