@@ -20,8 +20,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="panel-body">
                             <?php $form = ActiveForm::begin(); ?>
                             <div class="col-sm-12">
-                                <?= $form->field($model, 'follow_content')->textarea()->hint('设置用户添加公众帐号好友时，发送的欢迎信息。') ?>
-                                <?= $form->field($model, 'default_content')->textarea()->hint('当系统不知道该如何回复粉丝的消息时，默认发送的内容。') ?>
+                                <?= $form->field($model, 'follow_content')->textarea(['rows'=>5])->hint('设置用户添加公众帐号好友时，发送的欢迎信息。') ?>
+                                <?= $form->field($model, 'default_content')->textarea(['rows'=>5])->hint('当系统不知道该如何回复粉丝的消息时，默认发送的内容。') ?>
                                 <div class="hr-line-dashed"></div>
                             </div>
                             <div class="form-group">　
