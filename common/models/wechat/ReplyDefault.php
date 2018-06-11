@@ -29,7 +29,7 @@ class ReplyDefault extends ActiveRecord
     {
         return [
             [['append', 'updated'], 'integer'],
-            [['follow_content', 'default_content'], 'string', 'max' => 255],
+            [['follow_content', 'default_content'], 'string'],
         ];
     }
     /**
